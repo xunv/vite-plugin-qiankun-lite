@@ -6,6 +6,20 @@ import plugin from "./babel-plugin-transform-global-variables";
 type Options = {
   name: string;
   sandbox?: boolean;
+  /**
+   * 是否修复 CSS <link> 标签路径。
+   *
+   * 在 qiankun 微前端环境下，Vite 产出的 HTML 中 <link rel="stylesheet" href="/assets/xxx.css">
+   * 的路径是相对于子应用自身的，但子应用被 qiankun 加载时 CSS 路径需要加上 qiankun 注入的
+   * publicPath 前缀才能正确加载，否则会 404。
+   *
+   * 开启后，插件会将相对路径的 <link rel="stylesheet"> 替换为运行时动态注入脚本，
+   * 通过 __INJECTED_PUBLIC_PATH_BY_QIANKUN__ 获取前缀，动态创建 <link> 插入 <head>，
+   * 与 JS 入口路径的获取方式保持一致。
+   *
+   * 默认关闭，需要显式设置为 true 开启。
+   */
+  fixCssLink?: boolean;
 };
 
 export default function viteQiankun(opts: Options): PluginOption {
@@ -176,7 +190,9 @@ export default function viteQiankun(opts: Options): PluginOption {
         if (config.base) {
           publicPath = `${publicPath}.replace(${new RegExp(
             `${config.base}$`,
-          )}, "")`;
+          )}, "").replace(/\\/$/, "")`;
+        } else {
+          publicPath = `${publicPath}.replace(/\\/$/, "")`;
         }
       },
       transformIndexHtml(html: string) {
@@ -221,6 +237,12 @@ export default function viteQiankun(opts: Options): PluginOption {
         );
       });
     `);
+
+        // 修复 CSS <link> 路径：将相对路径的 <link rel="stylesheet"> 替换为运行时动态注入脚本
+        if (opts.fixCssLink) {
+          fixCssLinkPath($, publicPath, opts.name);
+        }
+
         return $.html();
       },
     },
@@ -233,10 +255,11 @@ function moduleScriptToGeneralScript(
 ) {
   const scriptSrc = script$.attr("src");
   if (!scriptSrc) return;
+  const isFullUrl = /^(https?:)?\/\//.test(scriptSrc);
   script$
     .removeAttr("src")
     .removeAttr("type")
-    .html(`import(${publicPath} + "${scriptSrc}")`);
+    .html(isFullUrl ? `import("${scriptSrc}")` : `import(${publicPath} + "${scriptSrc}")`);
   return script$;
 }
 
@@ -255,4 +278,59 @@ function reactRefreshModuleScriptToGeneralScript(
       })(new Function("return this")());
   `);
   return script$;
+}
+
+/**
+ * 修复 CSS <link> 标签路径问题。
+ *
+ * 在 qiankun 微前端环境下，HTML 中的 <link rel="stylesheet" href="/assets/xxx.css">
+ * 使用的是相对路径，但子应用被 qiankun 加载时需要加上 publicPath 前缀才能正确加载。
+ * 此函数将相对路径的 <link> 标签移除，并注入一段运行时脚本，
+ * 动态获取 publicPath 前缀后创建 <link> 插入 <head>，与 JS 入口路径处理方式一致。
+ * 已是完整 URL（http/https/协议相对路径）的 <link> 不做处理。
+ */
+function fixCssLinkPath(
+  $: ReturnType<typeof load>,
+  publicPath: string,
+  appName: string,
+) {
+  // 收集需要处理的相对路径 CSS href
+  const cssHrefs: string[] = [];
+  $('link[rel="stylesheet"]').each((_, el) => {
+    const href = $(el).attr("href");
+    if (!href) return;
+    // 只处理相对路径（以 / 开头且非 // 开头，且以 .css 结尾）
+    if (/^\/[^/].*\.css$/.test(href)) cssHrefs.push(href);
+  });
+
+  if (cssHrefs.length === 0) return;
+
+  // 移除需要处理的 <link> 标签
+  $('link[rel="stylesheet"]').each((_, el) => {
+    const href = $(el).attr("href");
+    if (!href || !/^\/[^/].*\.css$/.test(href)) return;
+    $(el).remove();
+  });
+
+  // 注入运行时动态创建 <link> 的脚本
+  const hrefs = cssHrefs.map((href) => JSON.stringify(href)).join(", ");
+  const scriptContent = [
+    `;(function() {`,
+    `  var base = ${publicPath};`,
+    `  var hrefs = [${hrefs}];`,
+    `  hrefs.forEach(function(href) {`,
+    `    var link = document.createElement('link');`,
+    `    link.rel = 'stylesheet';`,
+    `    link.crossOrigin = '';`,
+    `    link.href = base + href;`,
+    `    document.head.appendChild(link);`,
+    `  });`,
+    `})();`,
+  ].join("\n");
+
+  $("head").append(`
+    <script>
+      ${scriptContent.split("\n").join("\n      ")}
+    </script>
+  `);
 }
