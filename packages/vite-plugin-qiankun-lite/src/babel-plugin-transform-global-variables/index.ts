@@ -63,7 +63,8 @@ function isReplaceableIdentifier(
     !path.parentPath.isClassProperty({ key: path.node }) &&
     !path.parentPath.isClassMethod({ key: path.node }) &&
     !path.parentPath.isPrivateName({ id: path.node }) &&
-    !path.parentPath.isExportSpecifier()
+    !path.parentPath.isExportSpecifier() &&
+    !path.parentPath.isImportSpecifier()
   );
 }
 
