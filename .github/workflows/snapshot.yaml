@@ -8,7 +8,7 @@ jobs:
     env:
       CI: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/composite-actions/setup-pnpm
       - name: Publish snapshot
         uses: seek-oss/changesets-snapshot@v0

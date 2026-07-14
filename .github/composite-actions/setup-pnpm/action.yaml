@@ -1,14 +1,14 @@
 name: setup-pnpm
 description: "This is a composite GitHub Action that sets up pnpm, node and installs the project's dependencies."
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - uses: pnpm/action-setup@v2
+    - uses: pnpm/action-setup@v4
       with:
         version: 10
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v5
       with:
-        node-version: 20
+        node-version: 22
         cache: pnpm
     - run: pnpm install
       shell: bash
