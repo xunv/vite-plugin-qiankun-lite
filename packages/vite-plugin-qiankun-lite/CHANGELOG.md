@@ -1,5 +1,14 @@
 # vite-plugin-qiankun-lite
 
+## 1.4.0
+
+### Minor Changes
+
+- [`d8d41dd`](https://github.com/xunv/vite-plugin-qiankun-lite/commit/d8d41dd070a27dacab52a6737405cbe0c977d7c9) Thanks [@xunv](https://github.com/xunv)! - - Added `fixCssLink` option to fix CSS `<link>` relative paths in qiankun environments by dynamically injecting stylesheets with the correct publicPath prefix.
+  - Fixed trailing slash in `publicPath` to prevent double-slash paths (e.g. `//assets/xxx.js`) when the qiankun-injected publicPath retains a residual `/` after base removal.
+  - Fixed full URL script `src` (e.g. `http://`, `https://`, `//`) being incorrectly prefixed with `publicPath`, which could produce invalid paths like `https://entry.xxx/https://cdn.xxx/xxx.js`.
+  - Fixed `ImportSpecifier` being incorrectly replaced in the sandbox identifier transform, which could break import bindings.
+
 ## 1.3.0
 
 ### Minor Changes
