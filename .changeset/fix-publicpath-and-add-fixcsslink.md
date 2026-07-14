@@ -1,5 +1,5 @@
 ---
-"vite-plugin-qiankun-lite": minor
+'@xunv/vite-plugin-qiankun-lite': minor
 ---
 
 - Added `fixCssLink` option to fix CSS `<link>` relative paths in qiankun environments by dynamically injecting stylesheets with the correct publicPath prefix.

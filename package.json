@@ -1,18 +1,25 @@
 {
-  "name": "vite-plugin-qiankun-lite",
+  "name": "vite-plugin-qiankun-lite-monorepo",
+  "private": true,
   "author": {
-    "name": "Kotaro Sugawara",
-    "email": "kotarella1110@gmail.com"
+    "name": "xunv",
+    "email": "cczyue@qq.com"
   },
+  "contributors": [
+    {
+      "name": "Kotaro Sugawara",
+      "email": "kotarella1110@gmail.com"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kotarella1110/vite-plugin-qiankun-lite.git"
+    "url": "git+https://github.com/xunv/vite-plugin-qiankun-lite.git"
   },
   "bugs": {
-    "url": "https://github.com/kotarella1110/vite-plugin-qiankun-lite/issues"
+    "url": "https://github.com/xunv/vite-plugin-qiankun-lite/issues"
   },
-  "homepage": "https://github.com/kotarella1110/vite-plugin-qiankun-lite#readme",
+  "homepage": "https://github.com/xunv/vite-plugin-qiankun-lite#readme",
   "engines": {
     "pnpm": ">=8"
   },
