@@ -1,5 +1,14 @@
 # vite-plugin-qiankun-lite
 
+## 1.4.2
+
+### Patch Changes
+
+- [`82c4b03`](https://github.com/xunv/vite-plugin-qiankun-lite/commit/82c4b033580d59548e949405c78f83d770763195) Thanks [@xunv](https://github.com/xunv)! - docs: update README package name to scoped `@xunv/vite-plugin-qiankun-lite`
+
+  Fix the installation command and import example so they reference the
+  published scoped package name instead of the original unscoped name.
+
 ## 1.4.1
 
 ### Patch Changes
