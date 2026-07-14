@@ -17,7 +17,7 @@ jobs:
       - uses: ./.github/composite-actions/setup-pnpm
       - run: pnpm test
   e2e-test:
-    name: "e2e-test (sandbox: ${{ matrix.sandbox }})"
+    name: 'e2e-test (sandbox: ${{ matrix.sandbox }})'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,5 +28,5 @@ jobs:
       - uses: ./.github/composite-actions/setup-pnpm
       - if: matrix.sandbox == true
         run: echo 'VITE_SANDBOX=true' >> $GITHUB_ENV
-      - run: pnpm --filter vite-plugin-qiankun-lite build
+      - run: pnpm --filter @xunv/vite-plugin-qiankun-lite build
       - run: pnpm e2e
