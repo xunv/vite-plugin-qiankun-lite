@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
 import qiankun from "@xunv/vite-plugin-qiankun-lite";
+import { defineConfig } from "vite";
 import { name } from "./package.json";
 
 // https://vitejs.dev/config/

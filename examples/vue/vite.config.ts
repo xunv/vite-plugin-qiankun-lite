@@ -1,6 +1,6 @@
 import vue from "@vitejs/plugin-vue";
-import { defineConfig } from "vite";
 import qiankun from "@xunv/vite-plugin-qiankun-lite";
+import { defineConfig } from "vite";
 import { name } from "./package.json";
 
 // https://vitejs.dev/config/

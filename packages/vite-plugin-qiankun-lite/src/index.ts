@@ -48,48 +48,6 @@ export default function viteQiankun(opts: Options): PluginOption {
       },
     },
     {
-      name: "qiankun:vite-module-script-transform",
-      enforce: "post",
-      apply: "serve",
-      configureServer(server) {
-        return () => {
-          server.middlewares.use((_, res, next) => {
-            if (config.isProduction) return next();
-
-            const end = res.end.bind(res);
-            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-            res.end = (...args: any[]) => {
-              let [htmlStr, ...rest] = args;
-              if (typeof htmlStr === "string") {
-                const $ = load(htmlStr);
-                moduleScriptToGeneralScript(
-                  $($(`script[src=${config.base}@vite/client]`).get(0)),
-                  publicPath,
-                );
-                const moduleScripts$ = $("script:not([src])[type=module]");
-                moduleScripts$.each((_, moduleScript) => {
-                  const moduleScript$ = $(moduleScript);
-                  if (
-                    moduleScript$
-                      .text()
-                      .includes(`${config.base}@react-refresh`)
-                  ) {
-                    reactRefreshModuleScriptToGeneralScript(
-                      moduleScript$,
-                      `${publicPath} + "${config.base}@react-refresh"`,
-                    );
-                  }
-                });
-                htmlStr = $.html();
-              }
-              return end(htmlStr, ...rest);
-            };
-            next();
-          });
-        };
-      },
-    },
-    {
       name: "qiankun:support-sandbox",
       enforce: "post",
       async transform(code, id) {
@@ -206,11 +164,42 @@ export default function viteQiankun(opts: Options): PluginOption {
     </script>
         `);
 
+        // dev-only：把 Vite dev server 注入的 @vite/client 与 @react-refresh
+        // 从 module script 改写成 general script（dynamic import）。
+        //
+        // 这段逻辑以前放在独立的 `qiankun:vite-module-script-transform` 插件里，
+        // 通过 configureServer 劫持 res.end 完成改写。但那条通路依赖两个前提：
+        //   1) 请求必须走完整的 Vite dev middleware chain 直到 res.end
+        //   2) 响应体必须是 typeof === "string"
+        // 当上游把 Vite 当作 API 使用（如通过 server.transformIndexHtml 集成到
+        // Egg/Koa 等宿主），或把响应体转成 Buffer 时，res.end 劫持不会命中，
+        // 导致 @vite/client 仍是 module script，在 qiankun 沙箱下被 import-html-entry
+        // 当作 normal script 执行，遇到 ESM 语法直接报错：
+        //   import-html-entry: error occurs while executing normal script .../@vite/client
+        //
+        // 挪到 transformIndexHtml (enforce: "post") 后，与下方入口 module script
+        // 的改写走同一条 hook 路径，语义完全等价且不再依赖 res.end 通路。
+        // 生产构建产物里没有 @vite/client 与 @react-refresh，选择器匹配为空，
+        // 是 no-op，对生产环境零副作用。
+        const viteClient$ = $(`script[src="${config.base}@vite/client"]`);
+        if (viteClient$.length) {
+          moduleScriptToGeneralScript(viteClient$.first(), publicPath);
+        }
+        $("script:not([src])[type=module]").each((_, moduleScript) => {
+          const moduleScript$ = $(moduleScript);
+          if (moduleScript$.text().includes(`${config.base}@react-refresh`)) {
+            reactRefreshModuleScriptToGeneralScript(
+              moduleScript$,
+              `${publicPath} + "${config.base}@react-refresh"`,
+            );
+          }
+        });
+
         const moduleTags = $(
           'body script[src][type=module], head script[src][crossorigin=""]',
         );
         if (!moduleTags || !moduleTags.length) {
-          return;
+          return $.html();
         }
         moduleTags.each(
           (_, moduleTag) =>
@@ -259,7 +248,11 @@ function moduleScriptToGeneralScript(
   script$
     .removeAttr("src")
     .removeAttr("type")
-    .html(isFullUrl ? `import("${scriptSrc}")` : `import(${publicPath} + "${scriptSrc}")`);
+    .html(
+      isFullUrl
+        ? `import("${scriptSrc}")`
+        : `import(${publicPath} + "${scriptSrc}")`,
+    );
   return script$;
 }
 
@@ -315,17 +308,17 @@ function fixCssLinkPath(
   // 注入运行时动态创建 <link> 的脚本
   const hrefs = cssHrefs.map((href) => JSON.stringify(href)).join(", ");
   const scriptContent = [
-    `;(function() {`,
+    ";(function() {",
     `  var base = ${publicPath};`,
     `  var hrefs = [${hrefs}];`,
-    `  hrefs.forEach(function(href) {`,
-    `    var link = document.createElement('link');`,
-    `    link.rel = 'stylesheet';`,
-    `    link.crossOrigin = '';`,
-    `    link.href = base + href;`,
-    `    document.head.appendChild(link);`,
-    `  });`,
-    `})();`,
+    "  hrefs.forEach(function(href) {",
+    "    var link = document.createElement('link');",
+    "    link.rel = 'stylesheet';",
+    "    link.crossOrigin = '';",
+    "    link.href = base + href;",
+    "    document.head.appendChild(link);",
+    "  });",
+    "})();",
   ].join("\n");
 
   $("head").append(`
