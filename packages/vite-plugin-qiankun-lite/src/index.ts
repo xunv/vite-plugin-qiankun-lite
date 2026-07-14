@@ -281,22 +281,44 @@ function reactRefreshModuleScriptToGeneralScript(
  * 此函数将相对路径的 <link> 标签移除，并注入一段运行时脚本，
  * 动态获取 publicPath 前缀后创建 <link> 插入 <head>，与 JS 入口路径处理方式一致。
  * 已是完整 URL（http/https/协议相对路径）的 <link> 不做处理。
+ *
+ * 处理时会保留原 <link> 上的相关属性（crossorigin / media / integrity /
+ * referrerpolicy），并按原始出现顺序重新注入，以尽量维持样式层叠顺序与加载语义。
+ *
+ * 副作用说明：由于是在运行时通过脚本动态创建 <link>，样式加载相对于原始静态
+ * <link> 会被推后，可能出现短暂的无样式内容闪烁（FOUC）；同时浏览器的
+ * preload scanner 无法提前发现这些样式资源。这是将静态 <link> 改为 JS 注入
+ * 这一手法的固有代价，因此 fixCssLink 默认关闭、按需开启。
  */
 function fixCssLinkPath(
   $: ReturnType<typeof load>,
   publicPath: string,
   appName: string,
 ) {
-  // 收集需要处理的相对路径 CSS href
-  const cssHrefs: string[] = [];
+  // 收集需要处理的相对路径 CSS <link>，保留其原始属性
+  type CssLink = {
+    href: string;
+    crossorigin?: string;
+    media?: string;
+    integrity?: string;
+    referrerpolicy?: string;
+  };
+  const cssLinks: CssLink[] = [];
   $('link[rel="stylesheet"]').each((_, el) => {
     const href = $(el).attr("href");
     if (!href) return;
     // 只处理相对路径（以 / 开头且非 // 开头，且以 .css 结尾）
-    if (/^\/[^/].*\.css$/.test(href)) cssHrefs.push(href);
+    if (!/^\/[^/].*\.css$/.test(href)) return;
+    cssLinks.push({
+      href,
+      crossorigin: $(el).attr("crossorigin"),
+      media: $(el).attr("media"),
+      integrity: $(el).attr("integrity"),
+      referrerpolicy: $(el).attr("referrerpolicy"),
+    });
   });
 
-  if (cssHrefs.length === 0) return;
+  if (cssLinks.length === 0) return;
 
   // 移除需要处理的 <link> 标签
   $('link[rel="stylesheet"]').each((_, el) => {
@@ -305,17 +327,20 @@ function fixCssLinkPath(
     $(el).remove();
   });
 
-  // 注入运行时动态创建 <link> 的脚本
-  const hrefs = cssHrefs.map((href) => JSON.stringify(href)).join(", ");
+  // 注入运行时动态创建 <link> 的脚本，忠实还原原始属性并按原顺序注入
+  const links = JSON.stringify(cssLinks);
   const scriptContent = [
     ";(function() {",
     `  var base = ${publicPath};`,
-    `  var hrefs = [${hrefs}];`,
-    "  hrefs.forEach(function(href) {",
+    `  var links = ${links};`,
+    "  links.forEach(function(item) {",
     "    var link = document.createElement('link');",
     "    link.rel = 'stylesheet';",
-    "    link.crossOrigin = '';",
-    "    link.href = base + href;",
+    "    if (item.crossorigin != null) link.crossOrigin = item.crossorigin;",
+    "    if (item.media != null) link.media = item.media;",
+    "    if (item.integrity != null) link.integrity = item.integrity;",
+    "    if (item.referrerpolicy != null) link.referrerPolicy = item.referrerpolicy;",
+    "    link.href = base + item.href;",
     "    document.head.appendChild(link);",
     "  });",
     "})();",
