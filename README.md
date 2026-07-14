@@ -1,4 +1,4 @@
-# vite-plugin-qiankun-lite
+# @xunv/vite-plugin-qiankun-lite
 
 A simple Vite plugin for efficiently running MicroFrontend applications using [qiankun](https://github.com/umijs/qiankun).
 
@@ -17,7 +17,7 @@ A simple Vite plugin for efficiently running MicroFrontend applications using [q
 ## Installation
 
 ```bash
-npm install -D vite-plugin-qiankun-lite
+npm install -D @xunv/vite-plugin-qiankun-lite
 ```
 
 ## Getting Started
@@ -28,7 +28,7 @@ You can start working with just a few simple steps. Add the qiankun plugin to yo
 // vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import qiankun from 'vite-plugin-qiankun-lite'
+import qiankun from '@xunv/vite-plugin-qiankun-lite'
 
 export default defineConfig({
   plugins: [react(), qiankun({ name: 'sub-app', sandbox: true })],
