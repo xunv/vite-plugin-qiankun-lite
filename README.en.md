@@ -14,7 +14,7 @@ Heartfelt thanks to the original author, Kotaro Sugawara, for the pioneering wor
 
 Compared with the original (up to `1.3.0`), this fork adds the following fixes and enhancements starting from `1.4.0`:
 
-- **Added the `fixCssLink` option**: Fixes 404s caused by relative CSS `<link>` paths when a sub application runs under qiankun, by dynamically injecting stylesheets with the correct `publicPath` prefix at runtime while preserving the original tag attributes and injection order.
+- **Added the `fixCssLink` option**: Fixes 404s caused by relative CSS `<link>` paths when a sub application runs under qiankun, by dynamically injecting stylesheets with the correct `publicPath` prefix at runtime while preserving the original tag attributes and injection order. (⚠️ Has side effects such as FOUC; disabled by default—see [Options › `fixCssLink`](#fixcsslink) for details.)
 - **Fixed `publicPath` concatenation**: Eliminates double slashes like `//assets/xxx.js`, and prevents full URLs (`http(s)://`, `//`) from being incorrectly prefixed.
 - **Fixed sandbox identifier transform**: Prevents `ImportSpecifier` from being wrongly replaced, which could break import bindings.
 - **Improved compatibility when Vite is used as an API**: Moved the `@vite/client` rewrite into `transformIndexHtml`, fixing ESM errors when integrated into hosts such as Egg/Koa.

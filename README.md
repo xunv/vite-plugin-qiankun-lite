@@ -14,7 +14,7 @@
 
 相较原版（截至 `1.3.0`），本 fork 从 `1.4.0` 起做了以下修复与增强：
 
-- **新增 `fixCssLink` 选项**：修复子应用在 qiankun 下 CSS `<link>` 相对路径导致的 404，通过运行时按 `publicPath` 动态注入样式，并保留原标签属性、维持注入顺序。
+- **新增 `fixCssLink` 选项**：修复子应用在 qiankun 下 CSS `<link>` 相对路径导致的 404，通过运行时按 `publicPath` 动态注入样式，并保留原标签属性、维持注入顺序。（⚠️ 存在 FOUC 等副作用，默认关闭，详见[配置项 › `fixCssLink`](#fixcsslink)）
 - **修复 `publicPath` 拼接问题**：消除 `//assets/xxx.js` 双斜杠，以及 `http(s)://`、`//` 等完整 URL 被错误加前缀的问题。
 - **修复沙箱标识符转换**：避免 `ImportSpecifier` 被误替换而破坏 import 绑定。
 - **改进 Vite 作为 API 集成的兼容性**：将 `@vite/client` 改写迁移到 `transformIndexHtml`，修复在 Egg/Koa 等宿主中集成时 ESM 报错。
