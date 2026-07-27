@@ -51,7 +51,7 @@ export default defineConfig({
 })
 ```
 
-### 配置项
+## 配置项
 
 | 配置项       | 类型      | 默认值  | 说明                                                 |
 | ------------ | --------- | ------- | ---------------------------------------------------- |
@@ -59,7 +59,7 @@ export default defineConfig({
 | `sandbox`    | `boolean` | `false` | 是否启用 JS 沙箱（实验特性）。                       |
 | `fixCssLink` | `boolean` | `false` | 是否修复 CSS `<link>` 标签的相对路径，详见下文说明。 |
 
-#### `fixCssLink`
+### `fixCssLink`
 
 在 qiankun 微前端环境下，Vite 产出的 HTML 中形如 `<link rel="stylesheet" href="/assets/xxx.css">` 的路径是相对于子应用自身的。但子应用被 qiankun 加载时，CSS路径需要加上 qiankun 注入的 `publicPath` 前缀才能正确加载，否则会 404。
 

@@ -51,7 +51,7 @@ export default defineConfig({
 })
 ```
 
-### Options
+## Options
 
 | Option       | Type      | Default | Description                                                              |
 | ------------ | --------- | ------- | ------------------------------------------------------------------------ |
@@ -59,7 +59,7 @@ export default defineConfig({
 | `sandbox`    | `boolean` | `false` | Whether to enable the JS Sandbox (experimental).                         |
 | `fixCssLink` | `boolean` | `false` | Whether to fix relative paths of CSS `<link>` tags; see below.           |
 
-#### `fixCssLink`
+### `fixCssLink`
 
 In a qiankun micro-frontend environment, paths like `<link rel="stylesheet" href="/assets/xxx.css">` in the HTML produced by Vite are relative to the sub application itself. However, when the sub application is loaded by qiankun, the CSS path must be prefixed with the `publicPath` injected by qiankun to load correctly; otherwise it returns 404.
 
