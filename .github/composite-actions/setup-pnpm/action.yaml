@@ -3,7 +3,7 @@ description: "This is a composite GitHub Action that sets up pnpm, node and inst
 runs:
   using: 'composite'
   steps:
-    - uses: pnpm/action-setup@v4
+    - uses: pnpm/action-setup@v6
       with:
         version: 10
     - uses: actions/setup-node@v5
