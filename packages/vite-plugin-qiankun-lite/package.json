@@ -42,7 +42,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.en.md"
   ],
   "license": "MIT",
   "repository": {

@@ -13,5 +13,9 @@ import glob from "fast-glob";
       path.join(__dirname, "../README.md"),
       path.join(packageDir, "README.md"),
     );
+    await fs.promises.copyFile(
+      path.join(__dirname, "../README.en.md"),
+      path.join(packageDir, "README.en.md"),
+    );
   }
 })();
