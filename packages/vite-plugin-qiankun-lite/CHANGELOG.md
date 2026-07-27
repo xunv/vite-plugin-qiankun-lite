@@ -1,5 +1,11 @@
 # vite-plugin-qiankun-lite
 
+## 1.4.5
+
+### Patch Changes
+
+- [`a808b57`](https://github.com/xunv/vite-plugin-qiankun-lite/commit/a808b573470f1d8c9c5f66dd26a43797a6128d27) Thanks [@xunv](https://github.com/xunv)! - docs: translate the remaining Chinese changelog entry into English so the published CHANGELOG is fully English.
+
 ## 1.4.4
 
 ### Patch Changes
