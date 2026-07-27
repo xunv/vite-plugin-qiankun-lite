@@ -1,5 +1,11 @@
 # vite-plugin-qiankun-lite
 
+## 1.4.4
+
+### Patch Changes
+
+- [`29c0de6`](https://github.com/xunv/vite-plugin-qiankun-lite/commit/29c0de69498408d85e2f82fd50afd67855f2739a) Thanks [@xunv](https://github.com/xunv)! - Switch npm publishing to Trusted Publisher (OIDC). Releases no longer rely on `NPM_TOKEN` and now include build provenance.
+
 ## 1.4.3
 
 ### Patch Changes
