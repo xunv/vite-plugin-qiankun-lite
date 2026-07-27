@@ -3,7 +3,8 @@
   "version": "1.4.3",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "provenance": true
   },
   "description": "A simple Vite plugin for efficiently running MicroFrontend applications using qiankun",
   "author": {

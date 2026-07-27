@@ -10,5 +10,8 @@ runs:
       with:
         node-version: 22
         cache: pnpm
+    # Trusted Publishing (OIDC) requires npm >= 11.5.1
+    - run: npm install -g npm@latest
+      shell: bash
     - run: pnpm install
       shell: bash

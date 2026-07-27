@@ -5,6 +5,9 @@ on: workflow_dispatch
 jobs:
   snapshot:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     env:
       CI: true
     steps:
@@ -15,5 +18,4 @@ jobs:
         with:
           pre-publish: pnpm prepare-release
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
