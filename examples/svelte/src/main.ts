@@ -1,9 +1,10 @@
-import type { SvelteComponent } from "svelte";
+import { mount as svelteMount, unmount as svelteUnmount } from "svelte";
 import { name } from "../package.json";
 import App from "./App.svelte";
 import "./app.css";
 
-let app: SvelteComponent | null = null;
+// biome-ignore lint/suspicious/noExplicitAny: svelte component instance
+let app: Record<string, any> | null = null;
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const render = (props: any = {}) => {
@@ -14,7 +15,7 @@ const render = (props: any = {}) => {
     : document.querySelector("#app");
 
   if (!app) {
-    app = new App({
+    app = svelteMount(App, {
       target,
     });
   }
@@ -38,7 +39,7 @@ export async function mount(props: any) {
 export async function unmount(props: any) {
   console.log(`${name} unmount`, props);
   if (app) {
-    app.$destroy();
+    svelteUnmount(app);
     app = null;
   }
 }

@@ -37,13 +37,15 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     }
   },
   "files": [
     "dist",
-    "README.en.md"
+    "README.en.md",
+    "README.md"
   ],
   "license": "MIT",
   "repository": {
@@ -73,6 +75,6 @@
     "babel-plugin-tester": "^11.0.4"
   },
   "peerDependencies": {
-    "vite": ">= 4 < 8"
+    "vite": ">= 4 < 9"
   }
 }

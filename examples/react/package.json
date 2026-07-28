@@ -15,7 +15,7 @@
   "devDependencies": {
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
-    "@vitejs/plugin-react": "^4.6.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "@xunv/vite-plugin-qiankun-lite": "workspace:*"
   }
 }
