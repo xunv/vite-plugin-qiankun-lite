@@ -1,5 +1,11 @@
 # vite-plugin-qiankun-lite
 
+## 1.5.0
+
+### Minor Changes
+
+- [`ac4236b`](https://github.com/xunv/vite-plugin-qiankun-lite/commit/ac4236b5ddee562fee79319492c199884a834c09) Thanks [@xunv](https://github.com/xunv)! - Support Vite 8 by widening the `vite` peer dependency range to `>= 4 < 9`, and fix TypeScript type resolution (TS7016) under `node16`/`nodenext` module resolution by adding a `types` condition to the package `exports`.
+
 ## 1.4.5
 
 ### Patch Changes
